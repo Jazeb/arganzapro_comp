@@ -160,12 +160,13 @@ router.post('/login/discord', async function (req, res) {
     const include = [{ model: Games }];
     const user = await User.findOne({ where: { deviceId }, include });
 
+
+
     if (user && user.status == 'BLOCKED')
       return resp.success(res, { api_status: 'BLOCKED' });
 
     if (user && user.status == 'ACTIVE')
       await User.update({ lastLogin: new Date }, { where: { id: user.id } });
-
 
     if (!user) {
       const discordUser = await User.findOne({ where: { discordName } });
@@ -183,6 +184,9 @@ router.post('/login/discord', async function (req, res) {
 
       }
     }
+
+    await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
+    return resp.success(res, { api_status: 'LOGIN', user });
 
 
 
