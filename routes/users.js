@@ -33,12 +33,9 @@ router.post('/login', async function (req, res) {
    * 
    * send user in response
    * 
-   * 
-   * 
-   * 
    **/
   try {
-    
+
     const body = req.body;
     const { deviceId, lastLoginIp } = body;
 
@@ -50,17 +47,17 @@ router.post('/login', async function (req, res) {
     var user = await User.findOne({ where: { deviceId }, include });
 
     if (!user)
-      return resp.success(res, { status: 'SIGNUP' });
+      return resp.success(res, { api_status: 'SIGNUP' });
 
     if (user.status == 'BLOCKED')
-      return resp.success(res, { status: 'BLOCKED' });
+      return resp.success(res, { api_status: 'BLOCKED' });
 
     if (!user.discordName)
-      return resp.success(res, { status: 'LOGIN' });
+      return resp.success(res, { api_status: 'LOGIN' });
 
     await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
 
-    return resp.success(res, user);
+    return resp.success(res, { api_status: 'LOGIN', user });
 
   } catch (err) {
     console.error(err);
@@ -69,29 +66,53 @@ router.post('/login', async function (req, res) {
 });
 
 router.post('/login/guest', async function (req, res) {
+
+  /**
+   * 
+   * input = loginIp, deviceId
+   * 
+   * if !user
+   * add new user with fields (NickName, signup Date, mobile device ID, sign-up IP address, Balance 0, Account Status (Active))
+   * Response: LOGIN, userId, nickName
+   * 
+   * 
+   * if user exists with device id
+   * update Last Login IP, Last Login Date
+   * Response: LOGIN, userId, nickName 
+   * 
+   * if user == BLOCKEDt Login Date
+   * Response: LOGIN, userId, nickName 
+   * 
+   * if user == BLOCKED
+   * respond with BLOCKED status
+   * 
+   * respond with BLOCKED status
+   * 
+   * 
+   * 
+   **/
+
   try {
+
     const body = req.body;
     const { deviceId, nickName } = body;
     if (!deviceId || !nickName)
       return resp.error(res, 'Provide nick name and device id');
 
-    var user = null;
     const include = [{ model: Games }];
-    user = await User.findOne({ where: { deviceId }, include });
+    const user = await User.findOne({ where: { deviceId }, include });
 
-    if (!user) {
-      body.discordMember = 'No';
-      body.lastLogin = new Date();
-      user = await User.create(body);
-    }
-    else if (user.status == 'BLOCKED')
-      return resp.error(res, 'User is blocked');
-    else {
-      await User.update({ lastLogin: new Date }, { where: { deviceId } });
-      user = await User.findOne({ where: { deviceId }, include });
-    }
+    if (user && user.status == 'BLOCKED')
+      return resp.success(res, { api_status: 'BLOCKED' });
 
-    return resp.success(res, user);
+    if (user && user.status == 'ACTIVE')
+      await User.update({ lastLogin: new Date }, { where: { id: user.id } });
+
+    if (!user) await User.create(body);
+
+    const newuser = await User.findOne({ where: { id: user.id }, include });
+
+    return resp.success(res, { api_status: 'LOGIN', user: newuser });
 
   } catch (err) {
     console.error(err);
