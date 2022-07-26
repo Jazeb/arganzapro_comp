@@ -19,36 +19,47 @@ const resp = require('../resp');
 // });
 
 router.post('/login', async function (req, res) {
+
+  /**
+   * 
+   * user = find by device id
+   * 
+   * if !user then send SIGNUP key
+   * if user == blocked
+   * then send response with BLOCKED status
+   * 
+   * if !user.discordName
+   * then respond SIGNUP
+   * 
+   * send user in response
+   * 
+   * 
+   * 
+   * 
+   **/
   try {
+    
     const body = req.body;
     const { deviceId, lastLoginIp } = body;
 
     if (!deviceId)
-      return resp.error(res, 'Provide device id');
+      return resp.error(res, 'Provide device id and login ip');
 
     const include = [{ model: Games }];
 
-    var user = await User.findOne({ where: { deviceId } });
-    if (!user) {
-      if (!body.discordName) body.discordMember = 'No';
-      const newUser = await User.create(body);
-      await User.update({ lastLogin: new Date() }, { where: { id: newUser.id } });
-      const newuser = await User.findOne({ where: { deviceId }, include });
-      return resp.success(res, newuser);
-    }
+    var user = await User.findOne({ where: { deviceId }, include });
+
+    if (!user)
+      return resp.success(res, { status: 'SIGNUP' });
 
     if (user.status == 'BLOCKED')
-      return resp.error(res, 'User is blocked');
+      return resp.success(res, { status: 'BLOCKED' });
 
+    if (!user.discordName)
+      return resp.success(res, { status: 'LOGIN' });
 
-    if (user.discordName) {
-      if (!lastLoginIp)
-        return resp.error(res, 'Provide last login ip');
-      await User.update({ lastLoginIp, lastLogin: new Date() }, { where: { id: user.id } });
-    }
+    await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
 
-
-    user = await User.findOne({ where: { deviceId }, include });
     return resp.success(res, user);
 
   } catch (err) {
