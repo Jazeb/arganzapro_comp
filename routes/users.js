@@ -95,7 +95,7 @@ router.post('/login/guest', async function (req, res) {
   try {
 
     const body = req.body;
-    const { deviceId, nickName } = body;
+    const { deviceId, nickName, lastloginIp } = body;
     if (!deviceId || !nickName)
       return resp.error(res, 'Provide nick name and device id');
 
@@ -106,7 +106,7 @@ router.post('/login/guest', async function (req, res) {
       return resp.success(res, { api_status: 'BLOCKED' });
 
     if (user && user.status == 'ACTIVE')
-      await User.update({ lastLogin: new Date }, { where: { id: user.id } });
+      await User.update({ lastLogin: new Date, lastloginIp }, { where: { id: user.id } });
 
     if (!user) await User.create(body);
 
@@ -120,8 +120,96 @@ router.post('/login/guest', async function (req, res) {
   }
 });
 
+router.post('/login/discord', async function (req, res) {
+  /**
+   * 
+   * input = loginIp, deviceId, discordName
+   * 
+   * find user with deviceId
+   * if !user
+   * then find with discordName 
+   * 
+   * if !user
+   * add new user with fields (NickName, signup Date, mobile device ID, sign-up IP address, Balance 0, Account Status (Active))
+   * Response: LOGIN, userId, nickName
+   * 
+   * 
+   * if user exists with device id
+   * update Last Login IP, Last Login Date
+   * Response: LOGIN, userId, nickName 
+   * 
+   * if user == BLOCKEDt Login Date
+   * Response: LOGIN, userId, nickName 
+   * 
+   * if user == BLOCKED
+   * respond with BLOCKED status
+   * 
+   * respond with BLOCKED status
+   * 
+   * 
+   * 
+   **/
+
+  try {
+
+    const body = req.body;
+    const { deviceId, nickName, discordName } = body;
+    if (!deviceId || !nickName)
+      return resp.error(res, 'Provide nick name and device id');
+
+    const include = [{ model: Games }];
+    const user = await User.findOne({ where: { deviceId }, include });
+
+    if (user && user.status == 'BLOCKED')
+      return resp.success(res, { api_status: 'BLOCKED' });
+
+    if (user && user.status == 'ACTIVE')
+      await User.update({ lastLogin: new Date }, { where: { id: user.id } });
+
+
+
+    if (!user) {
+      const discordUser = await User.findOne({ where: { discordName } });
+
+      if (!discordUser) {
+
+        await User.create(body);
+        const newuser = await User.findOne({ where: { id: user.id }, include });
+        return resp.success(res, { api_status: 'LOGIN', user: newuser });
+
+      } else {
+
+        await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
+        return resp.success(res, { api_status: 'LOGIN', user });
+
+      }
+    }
+
+
+
+
+
+  } catch (err) {
+    console.error(err);
+    return resp.error(res, 'Error finding user', err.message);
+  }
+});
+
+
+router.get('/balance', async function (req, res) {
+  const deviceId = req.query.deviceId;
+  if (!deviceId)
+    return resp.error(res, 'Provide device id');
+
+  const user = await User.findOne({ where: { deviceId } });
+  if (!user)
+    return resp.error(res, 'User not found with this device id');
+
+  return resp.success(res, { balance: user.balance });
+});
+
 // reward
-router.post('/reward', async function (req, res) {
+router.post('/game', async function (req, res) {
   try {
     const body = req.body;
     if (!body.userId)
