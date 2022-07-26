@@ -153,9 +153,9 @@ router.post('/login/discord', async function (req, res) {
   try {
 
     const body = req.body;
-    const { deviceId, nickName, discordName } = body;
-    if (!deviceId || !nickName)
-      return resp.error(res, 'Provide nick name and device id');
+    const { deviceId, discordName, lastLoginIp } = body;
+    if (!deviceId)
+      return resp.error(res, 'Provide device id');
 
     const include = [{ model: Games }];
     const user = await User.findOne({ where: { deviceId }, include });
@@ -165,7 +165,6 @@ router.post('/login/discord', async function (req, res) {
 
     if (user && user.status == 'ACTIVE')
       await User.update({ lastLogin: new Date }, { where: { id: user.id } });
-
 
 
     if (!user) {
