@@ -39,7 +39,7 @@ router.post('/login', async function (req, res) {
     const body = req.body;
     const { deviceId, lastLoginIp } = body;
 
-    if (!deviceId)
+    if (!deviceId || !lastLoginIp)
       return resp.error(res, 'Provide device id and login ip');
 
     const include = [{ model: Games }];
@@ -95,9 +95,9 @@ router.post('/login/guest', async function (req, res) {
   try {
 
     const body = req.body;
-    const { deviceId, nickName, lastloginIp } = body;
-    if (!deviceId || !nickName)
-      return resp.error(res, 'Provide nick name and device id');
+    const { deviceId, nickName, lastLoginIp } = body;
+    if (!deviceId || !nickName || !lastLoginIp)
+      return resp.error(res, 'Provide nick name, last login ip and device id');
 
     const include = [{ model: Games }];
     const user = await User.findOne({ where: { deviceId }, include });
@@ -106,9 +106,10 @@ router.post('/login/guest', async function (req, res) {
       return resp.success(res, { api_status: 'BLOCKED' });
 
     if (user && user.status == 'ACTIVE')
-      await User.update({ lastLogin: new Date, lastloginIp }, { where: { id: user.id } });
+      await User.update({ lastLogin: new Date, lastLoginIp }, { where: { id: user.id } });
 
     if (!user) {
+      body.signupDate = new Date();
       await User.create(body);
     }
 
@@ -156,7 +157,7 @@ router.post('/login/discord', async function (req, res) {
 
     const body = req.body;
     const { deviceId, discordName, lastLoginIp } = body;
-    if (!deviceId)
+    if (!deviceId || !lastLoginIp)
       return resp.error(res, 'Provide device id');
 
     const include = [{ model: Games }];
@@ -174,6 +175,8 @@ router.post('/login/discord', async function (req, res) {
       const discordUser = await User.findOne({ where: { discordName } });
 
       if (!discordUser) {
+        body.discordMember = 'YES';
+        body.signupDate = new Date();
 
         await User.create(body);
         const newuser = await User.findOne({ where: { id: user.id }, include });
@@ -189,9 +192,6 @@ router.post('/login/discord', async function (req, res) {
 
     await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
     return resp.success(res, { api_status: 'LOGIN', user });
-
-
-
 
 
   } catch (err) {

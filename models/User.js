@@ -28,21 +28,21 @@ module.exports = function (sequelize, DataTypes) {
         discordMember: {
             type: DataTypes.ENUM(['YES', 'NO']),
             allowNull: false,
-            defaultValue: 'YES',
+            defaultValue: 'NO'
         },
-        // signupTime:{
-        //     type: DataTypes.STRING(100),
-        //     allowNull: false,
-        // },
         lastLogin: {
             type: DataTypes.DATE,
             allowNull: true,
         },
-        signupIpAddr: {
-            type: DataTypes.STRING(100),
+        signupDate: {
+            type: DataTypes.DATE,
             allowNull: true,
         },
         lastLoginIp: {
+            type: DataTypes.STRING(100),
+            allowNull: true,
+        },
+        signupIpAddr: {
             type: DataTypes.STRING(100),
             allowNull: true,
         },
