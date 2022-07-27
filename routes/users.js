@@ -156,13 +156,12 @@ router.post('/login/discord', async function (req, res) {
   try {
 
     const body = req.body;
-    const { deviceId, discordName, lastLoginIp } = body;
-    if (!deviceId || !lastLoginIp)
-      return resp.error(res, 'Provide device id');
+    const { deviceId, discordName, signupIpAddr, lastLoginIp } = body;
+    if (!deviceId || !signupIpAddr)
+      return resp.error(res, 'Provide device id and signup ip address');
 
     const include = [{ model: Games }];
     const user = await User.findOne({ where: { deviceId }, include });
-
 
 
     if (user && user.status == 'BLOCKED')
@@ -177,9 +176,11 @@ router.post('/login/discord', async function (req, res) {
       if (!discordUser) {
         body.discordMember = 'YES';
         body.signupDate = new Date();
+        body.lastLogin = new Date();
+        body.lastLoginIp = signupIpAddr;
 
         await User.create(body);
-        const newuser = await User.findOne({ where: { id: user.id }, include });
+        const newuser = await User.findOne({ where: { deviceId }, include });
         return resp.success(res, { api_status: 'LOGIN', user: newuser });
 
       } else {

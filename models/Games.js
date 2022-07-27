@@ -11,11 +11,11 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         },
         mode: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.ENUM(['Single', 'Missions', 'Multi', 'Tournament']),
             allowNull: false
         },
         result: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.ENUM(['Win', 'Lose']),
             allowNull: false
         },
         timeLeft: {
