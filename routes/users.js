@@ -108,9 +108,11 @@ router.post('/login/guest', async function (req, res) {
     if (user && user.status == 'ACTIVE')
       await User.update({ lastLogin: new Date, lastloginIp }, { where: { id: user.id } });
 
-    if (!user) await User.create(body);
+    if (!user) {
+      await User.create(body);
+    }
 
-    const newuser = await User.findOne({ where: { id: user.id }, include });
+    const newuser = await User.findOne({ where: { deviceId: body.deviceId }, include });
 
     return resp.success(res, { api_status: 'LOGIN', user: newuser });
 
