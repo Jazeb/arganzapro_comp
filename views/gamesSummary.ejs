@@ -1,0 +1,118 @@
+<%- include('header.ejs') %>
+  <%- include('navbar.ejs') %>
+
+    <div class="container-fluid">
+
+
+      <body>
+        <div class="input-group date" data-provide="datepicker">
+          <form class="form-inline my-2 my-lg-0" method="post" action="/gamesSummary">
+            <div>
+              <label for="startDate">From</label>
+              <input type="date" class="form-control" id="startDate" name="startDate">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div>
+            <br>
+            <div>
+              <label for="endDate">To</label>
+              <input type="date" class="form-control" id="endDate" name="endDate">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div>
+            <!-- <input class="form-control mr-sm-2" id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /> -->
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <p></p>
+            <br />
+          </form>
+        </div>
+
+        <br>
+        <br>
+        <p></p>
+        <container>
+          <table class="table">
+            <thead class="table-dark">
+              <tr>
+
+                <th scope="col"> User Id</th>
+                <th scope="col"> Signup Date</th>
+                <th scope="col"> NickName</th>
+                <th scope="col"> Total Sessions</th>
+                <th scope="col"> Single Sessions</th>
+                <th scope="col"> Multi Sessions</th>
+                <th scope="col"> Missions Sessions</th>
+                <th scope="col"> Tournament Sessions</th>
+                <th scope="col"> Wins</th>
+                <th scope="col"> Losses</th>
+                <th scope="col"> Wins Percent</th>
+                <th scope="col"> Avg Daily Sessions</th>
+                <th scope="col"> Points Wins</th>
+                <th scope="col"> Points Per Sessions</th>
+                <th scope="col"> Average Daily Points</th>
+
+
+              </tr>
+            </thead>
+
+            <tbody>
+              <% data.forEach(ele=> { %>
+                <tr>
+                  <td>
+                    <%= ele.id%>
+                  </td>
+                  <td>
+                    <%= ele.createdAt%>
+                  </td>
+                  <td>
+                    <%= ele.nickName%>
+                  </td>
+                  <td>
+                    <%= ele.totalSessions%>
+                  </td>
+                  <td>
+                    <%= ele.singleSessions%>
+                  </td>
+                  <td>
+                    <%= ele.multiSessions%>
+                  </td>
+                  <td>
+                    <%= ele.missionsSessions%>
+                  </td>
+                  <td>
+                    <%= ele.tournamentSessions%>
+                  </td>
+                  <td>
+                    <%= ele.wins%>
+                  </td>
+                  <td>
+                    <%= ele.lose%>
+                  </td>
+                  <td>
+                    <%= ele.winsPercent%>
+                  </td>
+                  <td>
+                    <%= ele.avgDailySessions%>
+                  </td>
+                  <td>
+                    <%= ele.totalPoints%>
+                  </td>
+                  <td>
+                    <%= ele.pointsPerSession%>
+                  </td>
+                  <td>
+                    <%= ele.avgDailyPoint%>
+                  </td>
+
+                </tr>
+                <% }); %>
+
+            </tbody>
+
+          </table>
+        </container>
+      </body>
+
+    </div>

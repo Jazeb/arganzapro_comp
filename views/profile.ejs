@@ -1,0 +1,121 @@
+<%- include('header.ejs') %>
+  <%- include('navbar.ejs') %>
+
+    <body>
+      <form class="form-inline my-2 my-lg-0" method="post" action="/profile"><input class="form-control mr-sm-2"
+          id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /><button
+          class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <p></p>
+        <br/>
+      </form>
+
+      <br>
+      <br>
+      <p></p>
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col"> User Id </th>
+            <th scope="col"> Discord Name </th>
+            <th scope="col"> Nick Name </th>
+            <th scope="col"> Device Id </th>
+            <th scope="col"> Discord Member </th>
+            <th scope="col"> Toggle Discord Member </th>
+            <th scope="col"> Last login </th>
+            <th scope="col"> Balance </th>
+            <th scope="col"> Status </th>
+            <th scope="col"> Change Status </th>
+            <th scope="col"> Last Login IP</th>
+            <th scope="col"> Signup Date </th>
+            <th scope="col"> Signup Ip Address </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user=> { %>
+            <tr>
+              <td>
+                <%= user.id %>
+              </td>
+              <td>
+                <%= user.discordName %>
+              </td>
+              <td>
+                <%= user.nickName %>
+              </td>
+              <td>
+                <%= user.deviceId %>
+              </td>
+              <td>
+                <%= user.discordMember %>
+              </td>
+              <td>
+                <div class="custom-control custom-switch">
+                  <% if ( user.discordMember=='YES' ) { %>
+                    <input type="checkbox" class="custom-control-input" id="status-toggle-discord" checked>
+                    <% } else { %>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle-discord">
+                      <% } %>
+                        <label class="custom-control-label" for="status-toggle-discord">Change Discord status</label>
+                </div>
+              </td>
+              <td>
+                <%= user.lastlogin %>
+              </td>
+              <td>
+                <%= user.balance %>
+              </td>
+              <td>
+                <%= user.status %>
+              </td>
+              <td>
+                <div class="custom-control custom-switch">
+                  <% if ( user.status=='ACTIVE' ) { %>
+                    <input type="checkbox" class="custom-control-input" id="status-toggle" checked>
+                    <% } else { %>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle">
+                      <% } %>
+                        <label class="custom-control-label" for="status-toggle">Change user status</label>
+                </div>
+              </td>
+              <td>
+                <%= user.lastloginIp %>
+              </td>
+              <td>
+                <%= user.createdAt %>
+              </td>
+              <td>
+                <%= user.signupIpAddr %>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
+    </body>
+
+    <script type="text/javascript" src="./javascripts/script.js"></script>
+    <script>
+
+      document.getElementById('status-toggle-discord').onchange = function (e) {
+
+        const users = '<%- JSON.stringify(users) %>';
+        const user = JSON.parse(users);
+
+        const discordMember = e.target.checked ? 'YES' : 'NO';
+        const body = { discordMember, userId: user[0].id };
+
+        return sendRequest(body);
+
+      };
+
+      document.getElementById('status-toggle').onchange = function (e) {
+
+        const users = '<%- JSON.stringify(users) %>';
+        const user = JSON.parse(users);
+
+        const status = e.target.checked ? 'ACTIVE' : 'BLOCKED';
+        const body = { status, userId: user[0].id };
+
+        return sendRequest(body);
+
+      };
+    </script>

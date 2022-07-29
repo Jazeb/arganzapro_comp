@@ -1,0 +1,68 @@
+<%- include('header.ejs') %>
+  <%- include('navbar.ejs') %>
+
+    <div class="container-fluid">
+
+      <body>
+        <div class="input-group date" data-provide="datepicker">
+          <form class="form-inline my-2 my-lg-0" method="post" action="/newUsers">
+            <div>
+              <label for="startDate">From</label>
+              <input type="date" class="form-control" id="startDate" name="startDate">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div>
+            <br>
+            <div>
+              <label for="endDate">To</label>
+              <input type="date" class="form-control" id="endDate" name="endDate">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div>
+            <!-- <input class="form-control mr-sm-2" id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /> -->
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <p></p>
+            <br />
+          </form>
+        </div>
+
+        <br>
+        <br>
+        <p></p>
+        <table class="table" id="usersList">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col"> User Id </th>
+              <th scope="col"> Signup Date </th>
+              <th scope="col"> Nick Name </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(user=> { %>
+              <tr>
+                <td>
+                  <%= user.id %>
+                </td>
+                <td>
+                  <%= user.createdAt %>
+                </td>
+                <td>
+                  <%= user.nickName %>
+                </td>
+
+              </tr>
+              <% }); %>
+          </tbody>
+        </table>
+      </body>
+    </div>
+
+
+    <script>
+      $(document).ready(function () {
+        $('#usersList').DataTable();
+        $('.dataTables_length').addClass('bs-select');
+      });
+    </script>

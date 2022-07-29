@@ -1,0 +1,81 @@
+<%- include('header.ejs') %>
+  <%- include('navbar.ejs') %>
+
+    <body>
+      <form class="form-inline my-2 my-lg-0" method="post" action="/games"><input class="form-control mr-sm-2"
+          id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /><button
+          class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <p></p><br />
+      </form>
+
+      <br>
+      <br>
+      <p></p>
+      <container>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col"> Game Id</th>
+              <th scope="col"> Mode</th>
+              <th scope="col"> Result</th>
+              <th scope="col"> Environment</th>
+              <th scope="col"> Win Reward</th>
+              <th scope="col"> Bonus</th>
+              <th scope="col"> Time Bonus</th>
+              <th scope="col"> Total Reward</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% games.forEach(game=> { %>
+              <tr>
+                <td>
+                  <%= game.id%>
+                </td>
+                <td>
+                  <%= game.mode%>
+                </td>
+                <td>
+                  <%= game.result%>
+                </td>
+                <td>
+                  <%= game.enviroment%>
+                </td>
+                <td>
+                  <%= game.winReward%>
+                </td>
+                <td>
+                  <%= game.bonus%>
+                </td>
+                <td>
+                  <%= game.timeBonus%>
+                </td>
+                <td>
+                  <%= game.totalReward%>
+                </td>
+
+              </tr>
+              <% }); %>
+
+          </tbody>
+
+        </table>
+      </container>
+    </body>
+
+    <script type="text/javascript" src="./javascripts/script.js"></script>
+
+    <script>
+
+      document.getElementById('status-toggle').onchange = function (e) {
+
+        const games = '<%- JSON.stringify(games) %>';
+        const user = JSON.parse(games);
+
+        const status = e.target.checked ? 'ACTIVE' : 'BLOCKED';
+        const body = { status, userId: user[0].id };
+        return sendRequest(body);
+
+      };
+
+    </script>
