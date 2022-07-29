@@ -149,7 +149,7 @@ router.post('/updateUser', async (req, res) => {
     ]
   }
   const user = await User.findOne({ where });
-  return res.render('updateUser', { user });
+  return res.render('updateUser', { user: user || {} });
   console.log(user)
 });
 
