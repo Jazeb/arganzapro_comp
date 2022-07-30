@@ -109,11 +109,15 @@ router.post('/login/guest', async function (req, res) {
       await User.update({ lastLogin: new Date, lastLoginIp }, { where: { id: user.id } });
 
     if (!user) {
-      body.signupDate = new Date();
+      let date = new Date();
+      body.signupDate = date
+      body.lastLogin = date
+      body.signupIpAddr = lastLoginIp;
+      delete body.signupIpAddr;
       await User.create(body);
     }
 
-    const newuser = await User.findOne({ where: { deviceId: body.deviceId }, include });
+    const newuser = await User.findOne({ where: { deviceId: body.deviceId } });
 
     return resp.success(res, { api_status: 'LOGIN', user: newuser });
 

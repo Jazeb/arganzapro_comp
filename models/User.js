@@ -27,8 +27,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         discordMember: {
             type: DataTypes.ENUM(['YES', 'NO']),
-            allowNull: false,
-            defaultValue: 'NO'
+            allowNull: true
         },
         lastLogin: {
             type: DataTypes.DATE,
