@@ -114,6 +114,8 @@ router.post('/login/guest', async function (req, res) {
       body.lastLogin = date
       body.signupIpAddr = lastLoginIp;
       delete body.signupIpAddr;
+      delete body.discordId;
+      delete body.discordName;
       await User.create(body);
     }
 
