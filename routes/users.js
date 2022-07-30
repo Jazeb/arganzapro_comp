@@ -253,15 +253,15 @@ router.get('/rewards', async function (req, res) {
 router.get('/leaderboard', async function (req, res) {
   try {
     const body = req.body;
-    const { period } = body;
+    const { period, userId } = body;
     if (!period || !['DAILY', 'WEEKLY', 'MONTHLY', 'OVERALL'].includes(period))
       return resp.error(res, 'Provide valid period');
 
     // const WEEKLY = `SELECT * FROM games LEFT OUTER JOIN user AS user ON games.userId = user.id WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY`;
-    const WEEKLY = `SELECT * FROM user WHERE user.createdAt >= DATE(NOW()) - INTERVAL 7 DAY ORDER BY balance DESC LIMIT 20`;
-    const MONTHLY = `SELECT * FROM user WHERE user.createdAt >= DATE(NOW()) - INTERVAL 30 DAY ORDER BY balance DESC LIMIT 20`;
-    const DAILY = `SELECT * FROM user WHERE DATE(user.createdAt) = DATE(NOW()) ORDER BY balance DESC LIMIT 20`;
-    const OVERALL = `SELECT * FROM user ORDER BY balance DESC LIMIT 20`;
+    const DAILY = `SELECT  totalReward, userId FROM games WHERE DATE(games.createdAt) = DATE(NOW()) LIMIT 20;`;
+    const WEEKLY = `SELECT totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY LIMIT 20;`;
+    const MONTHLY = `SELECT  totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 30 DAY LIMIT 20;`;
+    const OVERALL = `SELECT totalReward, userId FROM games  LIMIT 20;`;
 
     let query = null;
 
@@ -287,14 +287,61 @@ router.get('/leaderboard', async function (req, res) {
     }
 
     const data = await sequilize.query(query);
+    const games = data[0];
+
+    if (!games.length) return resp.success(res, { period, myRank: 0, myPoints: 0, top20: games });
+    console.log(games)
+
+    let userIds = []
+    let result = [];
+
+    games.map(game => userIds.push(game.userId));
+
+    userIds = [... new Set(userIds)];
+
+    for (let userId of userIds) {
+      const query = `SELECT games.userId, user.nickName, SUM(games.totalReward) AS totalPoints, user.nickName as nickName
+      FROM games  LEFT JOIN user ON games.userId = user.id 
+      WHERE userId = ${userId};`;
+
+      let data = await sequilize.query(query);
+      if (data[0].length) result.push(data[0][0])
+    }
+
+    let myRank = result.filter(rs => rs.userId == userId);
+
+    result = result.sort((a, b) => +b.totalReward - +a.totalReward);
+    for (const index in result) {
+      delete result[index].userId
+      result[index].rank = +index + 1
+    }
+
+    const myPoints = myRank[0].totalPoints;
+    if (myRank.length) myRank = myRank[0].rank;
+
+
+
+    /*[
+      {
+        userId: 19,
+        points: 500
+      },
+      {
+        userId: 20,
+        points: 600
+      }
+    ]*/
+
+
 
     // for(const game of data[0]) {
     //   const user = await User.findOne({ id: game.userId });
     //   game.user = user;
     // }
 
+    const response = { period, myRank, myPoints, top20: result }
 
-    return resp.success(res, data[0]);
+    return resp.success(res, response);
 
   } catch (err) {
     console.error(err);
