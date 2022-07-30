@@ -316,7 +316,7 @@ router.get('/leaderboard', async function (req, res) {
       result[index].rank = +index + 1
     }
 
-    const myPoints = myRank[0].totalPoints;
+    const myPoints = myRank.length > 0 ? myRank[0].totalPoints : 0;
     if (myRank.length) myRank = myRank[0].rank;
 
 
