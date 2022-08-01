@@ -11,7 +11,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         },
         mode: {
-            type: DataTypes.ENUM(['Single', 'Missions', 'Multi', 'Tournament']),
+            type: DataTypes.STRING(100),
             allowNull: false
         },
         result: {
@@ -38,7 +38,7 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(100),
             allowNull: true
         }, 
-        bonus:{
+        difficultyBonus:{
             type: DataTypes.INTEGER(11),
             allowNull: true
         },
