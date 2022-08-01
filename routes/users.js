@@ -112,7 +112,7 @@ router.post('/login/guest', async function (req, res) {
       let date = new Date();
       body.signupDate = date
       body.lastLogin = date
-      body.lastLoginIp = body.signupIpAddr;
+      body.signupIpAddr = lastLoginIp;
       
       delete body.discordId;
       delete body.discordName;
