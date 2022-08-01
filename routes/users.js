@@ -44,7 +44,7 @@ router.post('/login', async function (req, res) {
 
     const include = [{ model: Games }];
 
-    var user = await User.findOne({ where: { deviceId }, include });
+    var user = await User.findOne({ where: { deviceId } });
 
     if (!user)
       return resp.success(res, { api_status: 'SIGNUP' });
@@ -100,7 +100,7 @@ router.post('/login/guest', async function (req, res) {
       return resp.error(res, 'Provide nick name, last login ip and device id');
 
     const include = [{ model: Games }];
-    const user = await User.findOne({ where: { deviceId }, include });
+    const user = await User.findOne({ where: { deviceId } });
 
     if (user && user.status == 'BLOCKED')
       return resp.success(res, { api_status: 'BLOCKED' });
@@ -167,7 +167,7 @@ router.post('/login/discord', async function (req, res) {
       return resp.error(res, 'Provide device id and signup ip address');
 
     const include = [{ model: Games }];
-    const user = await User.findOne({ where: { deviceId }, include });
+    const user = await User.findOne({ where: { deviceId } });
 
 
     if (user && user.status == 'BLOCKED')
@@ -180,18 +180,18 @@ router.post('/login/discord', async function (req, res) {
       const discordUser = await User.findOne({ where: { discordName } });
 
       if (!discordUser) {
-        body.discordMember = 'YES';
+        // body.discordMember ;
         body.signupDate = new Date();
         body.lastLogin = new Date();
         body.lastLoginIp = signupIpAddr;
 
         await User.create(body);
-        const newuser = await User.findOne({ where: { deviceId }, include });
+        const newuser = await User.findOne({ where: { deviceId } });
         return resp.success(res, { api_status: 'LOGIN', user: newuser });
 
       } else {
 
-        await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { id: user.id } });
+        await User.update({ lastLogin: new Date(), lastLoginIp }, { where: { deviceId } });
         return resp.success(res, { api_status: 'LOGIN', user });
 
       }
