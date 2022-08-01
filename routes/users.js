@@ -259,9 +259,10 @@ router.get('/rewards', async function (req, res) {
   }
 });
 
-router.get('/leaderboard', async function (req, res) {
+router.post('/leaderboard', async function (req, res) {
   try {
     const body = req.body;
+    console.log({body})
     const { period, userId } = body;
     if (!period || !['DAILY', 'WEEKLY', 'MONTHLY', 'OVERALL'].includes(period))
       return resp.error(res, 'Provide valid period');
