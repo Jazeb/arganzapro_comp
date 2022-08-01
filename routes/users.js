@@ -113,7 +113,7 @@ router.post('/login/guest', async function (req, res) {
       body.signupDate = date
       body.lastLogin = date
       body.signupIpAddr = lastLoginIp;
-      
+
       delete body.discordId;
       delete body.discordName;
       await User.create(body);
@@ -209,11 +209,11 @@ router.post('/login/discord', async function (req, res) {
 
 
 router.get('/balance', async function (req, res) {
-  const deviceId = req.query.deviceId;
-  if (!deviceId)
-    return resp.error(res, 'Provide device id');
+  const userId = req.query.userId;
+  if (!userId)
+    return resp.error(res, 'Provide user id');
 
-  const user = await User.findOne({ where: { deviceId } });
+  const user = await User.findOne({ where: { id: userId } });
   if (!user)
     return resp.error(res, 'User not found with this device id');
 
@@ -229,11 +229,12 @@ router.post('/game', async function (req, res) {
 
     const totalReward = body.totalReward;
     const game = await Games.create(body);
-    
+
     body.date = new Date();
     await User.increment('balance', { by: totalReward, where: { id: body.userId } });
+    const user = await User.findOne({ where: { id: body.userId } });
 
-    return resp.success(res, game);
+    return resp.success(res, { game, balance: user.balance });
 
   } catch (err) {
     console.error(err);
