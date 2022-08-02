@@ -230,7 +230,6 @@ router.post('/game', async function (req, res) {
     const totalReward = body.totalReward;
     const game = await Games.create(body);
 
-    body.date = new Date();
     await User.increment('balance', { by: totalReward, where: { id: body.userId } });
     const user = await User.findOne({ where: { id: body.userId } });
 
