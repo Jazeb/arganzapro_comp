@@ -260,7 +260,7 @@ router.get('/rewards', async function (req, res) {
 
 router.get('/leaderboard', async function (req, res) {
   try {
-    const body = req.body;
+    const body = req.query;
 
     console.log({ body });
 
@@ -272,7 +272,7 @@ router.get('/leaderboard', async function (req, res) {
     const DAILY = `SELECT  totalReward, userId FROM games WHERE DATE(games.createdAt) = DATE(NOW()) LIMIT 20;`;
     const WEEKLY = `SELECT totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY LIMIT 20;`;
     const MONTHLY = `SELECT  totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 30 DAY LIMIT 20;`;
-    const OVERALL = `SELECT totalReward, userId FROM games  LIMIT 20;`;
+    const OVERALL = `SELECT totalReward, userId  FROM games  LIMIT 20;`;
 
     let query = null;
 
@@ -306,14 +306,13 @@ router.get('/leaderboard', async function (req, res) {
     let result = [];
 
 
-
     games.map(game => userIds.push(game.userId));
 
     userIds = [... new Set(userIds)];
 
 
     for (let userId of userIds) {
-      const query = `SELECT games.userId, user.nickName, SUM(games.totalReward) AS totalPoints, user.nickName as nickName
+      const query = `SELECT games.userId, games.createdAt, user.nickName, SUM(games.totalReward) AS totalPoints, user.nickName as nickName
       FROM games  LEFT JOIN user ON games.userId = user.id 
       WHERE userId = ${userId} AND status != 'BLOCKED';`;
 
