@@ -302,27 +302,31 @@ router.get('/leaderboard', async function (req, res) {
     const games = data[0];
 
     if (!games.length) return resp.success(res, { period, myRank: 0, myPoints: 0, top20: games });
-    console.log(games)
 
     let userIds = []
     let result = [];
+
+
 
     games.map(game => userIds.push(game.userId));
 
     userIds = [... new Set(userIds)];
 
+
     for (let userId of userIds) {
       const query = `SELECT games.userId, user.nickName, SUM(games.totalReward) AS totalPoints, user.nickName as nickName
       FROM games  LEFT JOIN user ON games.userId = user.id 
-      WHERE userId = ${userId};`;
+      WHERE userId = ${userId} AND status != 'BLOCKED';`;
 
       let data = await sequilize.query(query);
       if (data[0].length) result.push(data[0][0])
     }
 
+    result = result.filter(rs => rs.userId !== null);
     let myRank = result.filter(rs => rs.userId == userId);
 
-    result = result.sort((a, b) => +b.totalReward - +a.totalReward);
+    result = result.sort((a, b) => +b.totalPoints - +a.totalPoints);
+
     for (const index in result) {
       delete result[index].userId
       result[index].rank = +index + 1
@@ -330,20 +334,6 @@ router.get('/leaderboard', async function (req, res) {
 
     const myPoints = myRank.length > 0 ? myRank[0].totalPoints : 0;
     if (myRank.length) myRank = myRank[0].rank;
-
-
-
-    /*[
-      {
-        userId: 19,
-        points: 500
-      },
-      {
-        userId: 20,
-        points: 600
-      }
-    ]*/
-
 
 
     // for(const game of data[0]) {
