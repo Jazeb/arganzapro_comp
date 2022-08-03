@@ -262,17 +262,15 @@ router.get('/leaderboard', async function (req, res) {
   try {
     const body = req.query;
 
-    console.log({ body });
-
     const { period, userId } = body;
     if (!period || !['DAILY', 'WEEKLY', 'MONTHLY', 'OVERALL'].includes(period))
       return resp.error(res, 'Provide valid period');
 
     // const WEEKLY = `SELECT * FROM games LEFT OUTER JOIN user AS user ON games.userId = user.id WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY`;
-    const DAILY = `SELECT  totalReward, userId FROM games WHERE DATE(games.createdAt) = DATE(NOW()) LIMIT 20;`;
-    const WEEKLY = `SELECT totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY LIMIT 20;`;
-    const MONTHLY = `SELECT  totalReward, userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 30 DAY LIMIT 20;`;
-    const OVERALL = `SELECT totalReward, userId  FROM games  LIMIT 20;`;
+    const DAILY = `SELECT  userId FROM games WHERE DATE(games.createdAt) = DATE(NOW()) LIMIT 20;`;
+    const WEEKLY = `SELECT userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 7 DAY LIMIT 20;`;
+    const MONTHLY = `SELECT  userId FROM games WHERE games.createdAt >= DATE(NOW()) - INTERVAL 30 DAY LIMIT 20;`;
+    const OVERALL = `SELECT userId  FROM games  LIMIT 20;`;
 
     let query = null;
 
@@ -310,11 +308,20 @@ router.get('/leaderboard', async function (req, res) {
 
     userIds = [... new Set(userIds)];
 
+    let period_query = '';
+    if (period == 'DAILY') period_query = `DAY(games.createdAt) = DAY(NOW())`;
+    else if (period == 'WEEKLY') period_query = `WEEKOFYEAR(games.createdAt) = WEEKOFYEAR(NOW())`;
+    else if (period == 'MONTHLY') period_query = `MONTH(games.createdAt) = MONTH(NOW())`;
+    else if (period == 'OVERALL') period_query = `1`;
 
     for (let userId of userIds) {
-      const query = `SELECT games.userId, games.createdAt, user.nickName, SUM(games.totalReward) AS totalPoints, user.nickName as nickName
-      FROM games  LEFT JOIN user ON games.userId = user.id 
-      WHERE userId = ${userId} AND status != 'BLOCKED';`;
+      const query = `
+      SELECT games.userId, games.createdAt, user.nickName, 
+      SUM(games.totalReward) AS totalPoints, user.nickName as nickName
+      FROM games  
+      LEFT JOIN user ON games.userId = user.id 
+      WHERE userId = ${userId} AND status != 'BLOCKED'
+      AND ${period_query};`;
 
       let data = await sequilize.query(query);
       if (data[0].length) result.push(data[0][0])
