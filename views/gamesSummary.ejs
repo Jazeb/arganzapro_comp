@@ -5,27 +5,31 @@
 
 
       <body>
-        <div class="input-group date" data-provide="datepicker">
-          <form class="form-inline my-2 my-lg-0" method="post" action="/gamesSummary">
-            <div>
-              <label for="startDate">From</label>
-              <input type="date" class="form-control" id="startDate" name="startDate">
-              <div class="input-group-addon">
-                <span class="glyphicon glyphicon-th"></span>
-              </div>
+        <div>
+          <form class="form-inline" method="post" action="/gamesSummary">
+            <input class="form-control" id="nickName" name="nickName" type="search" placeholder="Nickname"
+              aria-label="Search" />
+            <br>
+            <label style="margin-left:12px; margin-top:5px;" for="startDate">From</label>
+            <input style="margin-left:12px; margin-top:5px;" type="date" class="form-control" id="startDate"
+              name="startDate">
+            <div class="input-group-addon">
+              <span class="glyphicon glyphicon-th"></span>
             </div>
             <br>
-            <div>
-              <label for="endDate">To</label>
-              <input type="date" class="form-control" id="endDate" name="endDate">
-              <div class="input-group-addon">
-                <span class="glyphicon glyphicon-th"></span>
-              </div>
+            <!-- <div> -->
+            <label style="margin-left:12px; margin-top:5px;" for="endDate">To</label>
+            <input style="margin-left:12px; margin-top:5px;" type="date" class="form-control" id="endDate"
+              name="endDate">
+            <div class="input-group-addon">
+              <span class="glyphicon glyphicon-th"></span>
             </div>
+            <!-- </div> -->
             <!-- <input class="form-control mr-sm-2" id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /> -->
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            <p></p>
-            <br />
+            <button style="margin-left:12px; margin-top:5px;" class="btn btn-outline-success my-2 my-sm-0"
+              type="submit">Search</button>
+            <!-- <p></p> -->
+            <!-- <br /> -->
           </form>
         </div>
 
@@ -116,3 +120,4 @@
       </body>
 
     </div>
+  <script type="text/javascript" src="./javascripts/script.js"></script>

@@ -35,8 +35,19 @@
           <thead class="table-dark">
             <tr>
               <th scope="col"> User Id </th>
-              <th scope="col"> Signup Date </th>
+              <th scope="col"> Discord Name </th>
               <th scope="col"> Nick Name </th>
+              <th scope="col"> Device Id </th>
+              <th scope="col"> Discord Member Changed </th>
+              <th scope="col"> Toggle Discord Member </th>
+              <th scope="col"> Last login </th>
+              <th scope="col"> Balance </th>
+              <!-- <th scope="col"> Status </th> -->
+              <th scope="col"> Status </th>
+              <th scope="col"> Last Login IP</th>
+              <th scope="col"> Signup Date </th>
+              <th scope="col"> Signup Ip Address </th>
+              <th scope="col"> Status Changed Date </th>
             </tr>
           </thead>
           <tbody>
@@ -46,12 +57,58 @@
                   <%= user.id %>
                 </td>
                 <td>
-                  <%= user.createdAt %>
+                  <%= user.discordName %>
                 </td>
                 <td>
                   <%= user.nickName %>
                 </td>
-
+                <td>
+                  <%= user.deviceId %>
+                </td>
+                <td>
+                  <%= user.lastDiscordStatusChangedDate %>
+                </td>
+                <td>
+                  <div class="custom-control custom-switch">
+                    <% if ( user.discordMember=='YES' ) { %>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle-discord" checked>
+                      <% } else { %>
+                        <input type="checkbox" class="custom-control-input" id="status-toggle-discord">
+                        <% } %>
+                          <label class="custom-control-label" for="status-toggle-discord"></label>
+                  </div>
+                </td>
+                <td>
+                  <%= user.lastlogin %>
+                </td>
+                <td>
+                  <%= user.balance %>
+                </td>
+                <!-- <td>
+                  <%= user.status %>
+                </td> -->
+                <td>
+                  <div class="custom-control custom-switch">
+                    <% if ( user.status=='ACTIVE' ) { %>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle" checked>
+                      <% } else { %>
+                        <input type="checkbox" class="custom-control-input" id="status-toggle">
+                        <% } %>
+                          <label class="custom-control-label" for="status-toggle"></label>
+                  </div>
+                </td>
+                <td>
+                  <%= user.lastloginIp %>
+                </td>
+                <td>
+                  <%= user.createdAt %>
+                </td>
+                <td>
+                  <%= user.signupIpAddr %>
+                </td>
+                <td>
+                  <%= user.lastStatusChangedDate %>
+                </td>
               </tr>
               <% }); %>
           </tbody>
@@ -66,3 +123,5 @@
         $('.dataTables_length').addClass('bs-select');
       });
     </script>
+
+<script type="text/javascript" src="./javascripts/script.js"></script>

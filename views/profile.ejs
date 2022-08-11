@@ -2,11 +2,13 @@
   <%- include('navbar.ejs') %>
 
     <body>
-      <form class="form-inline my-2 my-lg-0" method="post" action="/profile"><input class="form-control mr-sm-2"
-          id="nickName" name="nickName" type="search" placeholder="Nickname" aria-label="Search" /><button
-          class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      <form class="form-inline my-2 my-lg-0" method="post" action="/profile">
+        <input class="form-control mr-sm-2" id="nickName" name="nickName" type="search" placeholder="Nickname"
+          aria-label="Search" />
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search
+        </button>
         <p></p>
-        <br/>
+        <br />
       </form>
 
       <br>
@@ -19,15 +21,16 @@
             <th scope="col"> Discord Name </th>
             <th scope="col"> Nick Name </th>
             <th scope="col"> Device Id </th>
-            <th scope="col"> Discord Member </th>
+            <th scope="col"> Discord Member Changed </th>
             <th scope="col"> Toggle Discord Member </th>
             <th scope="col"> Last login </th>
             <th scope="col"> Balance </th>
+            <!-- <th scope="col"> Status </th> -->
             <th scope="col"> Status </th>
-            <th scope="col"> Change Status </th>
             <th scope="col"> Last Login IP</th>
             <th scope="col"> Signup Date </th>
             <th scope="col"> Signup Ip Address </th>
+            <th scope="col"> Status Changed Date </th>
           </tr>
         </thead>
         <tbody>
@@ -46,7 +49,7 @@
                 <%= user.deviceId %>
               </td>
               <td>
-                <%= user.discordMember %>
+                <%= user.lastDiscordStatusChangedDate %>
               </td>
               <td>
                 <div class="custom-control custom-switch">
@@ -55,7 +58,7 @@
                     <% } else { %>
                       <input type="checkbox" class="custom-control-input" id="status-toggle-discord">
                       <% } %>
-                        <label class="custom-control-label" for="status-toggle-discord">Change Discord status</label>
+                        <label class="custom-control-label" for="status-toggle-discord"></label>
                 </div>
               </td>
               <td>
@@ -64,9 +67,9 @@
               <td>
                 <%= user.balance %>
               </td>
-              <td>
+              <!-- <td>
                 <%= user.status %>
-              </td>
+              </td> -->
               <td>
                 <div class="custom-control custom-switch">
                   <% if ( user.status=='ACTIVE' ) { %>
@@ -74,7 +77,7 @@
                     <% } else { %>
                       <input type="checkbox" class="custom-control-input" id="status-toggle">
                       <% } %>
-                        <label class="custom-control-label" for="status-toggle">Change user status</label>
+                        <label class="custom-control-label" for="status-toggle"></label>
                 </div>
               </td>
               <td>
@@ -85,6 +88,9 @@
               </td>
               <td>
                 <%= user.signupIpAddr %>
+              </td>
+              <td>
+                <%= user.lastStatusChangedDate %>
               </td>
             </tr>
             <% }); %>
@@ -119,3 +125,5 @@
 
       };
     </script>
+
+<script type="text/javascript" src="./javascripts/script.js"></script>

@@ -4,14 +4,20 @@ const router = express.Router();
 
 const { User, Games } = require('../models/index');
 const sequilize = require('../db.connection');
+const USERNAME = 'admin';
+const PASSWORD = 'comp';
+const ID = 1122;
 
-router.get('/', (req, res, next) => res.render('index', { title: 'Express' }));
+router.get('/', (req, res, next) => res.render('index', { title: 'Express', id: null }));
 
 
-/**
- * New users summary
- */
 router.get('/newUsers', async (req, res) => res.render('newUsers', { title: 'Express', users: [] }));
+router.get('/login', async (req, res) => res.render('login', { title: 'Express', users: [] }));
+
+router.post('/login', async (req, res) => {
+  if (req.body.username !== USERNAME || req.body.password !== PASSWORD) return res.status(403).render('login');
+  return res.status(200).render('index', { id: ID });
+});
 
 router.post('/newUsers', async (req, res) => {
   const { startDate, endDate } = req.body;
@@ -19,7 +25,7 @@ router.post('/newUsers', async (req, res) => {
 
   const query = `SELECT * FROM user WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
   const users = await sequilize.query(query);
-  return res.render('newUsers', { title: 'Express', users: users[0] });
+  return res.render('newUsers', { title: 'Express', users: users[0], id: ID });
 
 });
 
@@ -33,12 +39,13 @@ const getDays = (startDate, endDate) => {
  * Games Summary
  */
 
-router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', data: [] }));
+router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', data: [], id: ID }));
 
 router.post('/gamesSummary', async (req, res) => {
 
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate, nickName } = req.body;
   if (!startDate) return res.render('gamesSummary', { title: 'Express', summary: [] });
+
 
   const query = `SELECT userId FROM games WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
   const result = await sequilize.query(query);
@@ -46,6 +53,7 @@ router.post('/gamesSummary', async (req, res) => {
   const userIds = result[0].map(user => user.userId);
 
   const where = {
+    'nickName':nickName,
     'id': {
       [Op.in]: userIds
     }
@@ -54,20 +62,22 @@ router.post('/gamesSummary', async (req, res) => {
   const include = [{ model: Games }];
   const data = await User.findAll({ where, include });
 
+
   const days = getDays(startDate, endDate);
 
   data.map(d => d = d.toJSON());
-  data.map(user => {
+
+  for (const user of data) {
     const games = user.games;
 
     user['totalSessions'] = games.length;
-    user['singleSessions'] = games.filter(game => game.mode == 'Single').length;
-    user['missionsSessions'] = games.filter(game => game.mode == 'Missions').length;
-    user['multiSessions'] = games.filter(game => game.mode == 'Multi').length;
-    user['tournamentSessions'] = games.filter(game => game.mode == 'Tournament').length;
+    user['singleSessions'] = games.filter(game => game.mode == 'SINGLE').length;
+    user['missionsSessions'] = games.filter(game => game.mode == 'MISSIONS').length;
+    user['multiSessions'] = games.filter(game => game.mode == 'MULTI').length;
+    user['tournamentSessions'] = games.filter(game => game.mode == 'TOURNAMENT').length;
 
-    user['wins'] = games.filter(game => game.result == 'Win').length;
-    user['lose'] = games.filter(game => game.result == 'Lose').length;
+    user['wins'] = games.filter(game => game.result == 'WIN').length;
+    user['lose'] = games.filter(game => game.result == 'LOSE').length;
 
     user['winsPercent'] = (user['wins'] / user['totalSessions']) * 100;
     user['avgDailySessions'] = ((user['totalSessions'] / days) * 100).toFixed();
@@ -78,26 +88,36 @@ router.post('/gamesSummary', async (req, res) => {
 
     user['totalPoints'] = totalPoints;
 
-    user['pointsPerSession'] = totalPoints / user['totalSessions'];
+    user['pointsPerSession'] = (totalPoints / user['totalSessions']).toFixed();
     user['avgDailyPoint'] = (totalPoints / days).toFixed();
-  });
+  }
+  // data.map(user => {
 
-  return res.render('gamesSummary', { title: 'Express', data });
+  // });
+
+
+  return res.render('gamesSummary', { title: 'Express', data, id: ID });
 
 });
 
 /**
  * Games APIs
  */
-router.get('/games', async (req, res) => res.render('games', { title: 'Express', games: [] }));
+router.get('/games', async (req, res) => res.render('games', { title: 'Express', games: [], id: ID }));
 
 router.post('/games', async function (req, res) {
-  console.log(req.body)
-  const nickName = req.body.nickName;
-  const user = await User.findOne({ where: { nickName } });
-  if(!user) return res.render('games', { title: 'Games', games:[]})
-  const games = await Games.findAll({ where: { userId: user.id } });
-  return res.render('games', { title: 'Games', games });
+  try {
+    const { startDate, endDate, nickName } = req.body;
+    const user = await User.findOne({ where: { nickName } });
+    if (!user) return res.render('games', { title: 'Games', games: [], id: ID })
+    // const games = await Games.findAll({ where: { userId: user.id } });
+    const query = `SELECT * FROM games WHERE userId = ${user.id} AND Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
+    const games = await sequilize.query(query);
+    return res.render('games', { title: 'Games', games: games[0], id: ID });
+  } catch (err) {
+    console.error(err);
+    return
+  }
 });
 
 
@@ -105,7 +125,7 @@ router.post('/games', async function (req, res) {
 /**
  * Profile APIs
  */
-router.get('/profile', (req, res) => res.render('profile', { title: 'Express', users: [] }));
+router.get('/profile', (req, res) => res.render('profile', { title: 'Express', users: [], id: ID }));
 
 router.post('/profile', async function (req, res, next) {
 
@@ -114,11 +134,17 @@ router.post('/profile', async function (req, res, next) {
   // const include = [{ model: Games }]
   const users = await User.findAll({ where: { nickName } });
 
-  return res.render('profile', { title: 'Express', users });
+  return res.render('profile', { title: 'Express', users, id: ID });
 
 });
 
 router.put('/profile', async function (req, res, next) {
+  if (req.body.discordMember)
+    req.body.lastDiscordStatusChangedDate = new Date();
+  else if (req.body.status)
+    req.body.lastStatusChangedDate = new Date();
+
+
 
   const { userId, ...rest } = req.body;
 
@@ -126,11 +152,11 @@ router.put('/profile', async function (req, res, next) {
 
   const users = await User.findAll({ where: { id: userId } });
 
-  return res.render('profile', { title: 'Express', users });
+  return res.render('profile', { title: 'Express', users, id: ID });
 
 });
 
-router.get('/updateUser', (req, res) => res.render('updateUser', { title: 'Update User Data', user: {} }));
+router.get('/updateUser', (req, res) => res.render('updateUser', { title: 'Update User Data', user: {}, id: ID }));
 
 router.post('/updateUser', async (req, res) => {
   const key = req.body.key;
@@ -149,7 +175,7 @@ router.post('/updateUser', async (req, res) => {
     ]
   }
   const user = await User.findOne({ where });
-  return res.render('updateUser', { user: user || {} });
+  return res.render('updateUser', { user: user || {}, id: ID });
   console.log(user)
 });
 

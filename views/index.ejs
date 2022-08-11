@@ -1,2 +1,12 @@
 <%- include('header.ejs') %>
 <%- include('navbar.ejs') %>
+
+<script>
+    const id =  window.sessionStorage.getItem('id') || '<%- JSON.stringify(id) %>';
+    if (id && id == 1122) {
+        window.sessionStorage.setItem('id', id);
+        // window.localStorage.setItem('id', id);
+    } else {
+        window.location.href = 'http://localhost:4000/login';
+    }
+</script>

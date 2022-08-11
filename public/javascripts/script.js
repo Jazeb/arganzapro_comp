@@ -11,3 +11,13 @@ function sendRequest(body) {
 
     xhr.send(JSON.stringify(body));
 }
+
+const id = window.sessionStorage.getItem('id');
+if (id && id == 1122) {
+    console.log(' id found', id)
+    window.sessionStorage.setItem('id', id);
+    // window.localStorage.setItem('id', id);
+} else {
+    console.log('id not present')
+    window.location.href = 'http://localhost:4000/login';
+}
