@@ -44,7 +44,7 @@ router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { tit
 router.post('/gamesSummary', async (req, res) => {
 
   const { startDate, endDate, nickName } = req.body;
-  if (!startDate) return res.render('gamesSummary', { title: 'Express', summary: [] });
+  if (!startDate || !endDate) return res.render('gamesSummary', { title: 'Express', data: [] });
 
 
   const query = `SELECT userId FROM games WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
@@ -96,6 +96,7 @@ router.post('/gamesSummary', async (req, res) => {
   // });
 
 
+  console.log(data);
   return res.render('gamesSummary', { title: 'Express', data, id: ID });
 
 });
