@@ -43,7 +43,7 @@ router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { tit
 
 router.post('/gamesSummary', async (req, res) => {
 
-  const { startDate, endDate, nickName } = req.body;
+  const { startDate, endDate } = req.body;
   if (!startDate || !endDate) return res.render('gamesSummary', { title: 'Express', data: [] });
 
 
@@ -53,7 +53,6 @@ router.post('/gamesSummary', async (req, res) => {
   const userIds = result[0].map(user => user.userId);
 
   const where = {
-    'nickName':nickName,
     'id': {
       [Op.in]: userIds
     }
@@ -96,7 +95,6 @@ router.post('/gamesSummary', async (req, res) => {
   // });
 
 
-  console.log(data);
   return res.render('gamesSummary', { title: 'Express', data, id: ID });
 
 });
