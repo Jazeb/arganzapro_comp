@@ -32,14 +32,14 @@
 
         <br>
         <br>
-        <p>Total rows: <%= data.length%> </p>
+        <p>Total rows: <%= data.length%>
+        </p>
         <container>
           <table class="table">
             <thead class="table-dark">
               <tr>
 
                 <th scope="col"> User Id</th>
-                <th scope="col"> Signup Date</th>
                 <th scope="col"> Nick Name</th>
                 <th scope="col"> Discord Name</th>
                 <th scope="col"> Total Sessions</th>
@@ -54,6 +54,7 @@
                 <th scope="col"> Points Wins</th>
                 <th scope="col"> Points Per Sessions</th>
                 <th scope="col"> Average Daily Points</th>
+                <th scope="col"> Signup </th>
 
 
               </tr>
@@ -64,9 +65,6 @@
                 <tr>
                   <td>
                     <%= ele.id%>
-                  </td>
-                  <td>
-                    <%= ele.createdAt%>
                   </td>
                   <td>
                     <%= ele.nickName%>
@@ -110,6 +108,9 @@
                   <td>
                     <%= ele.avgDailyPoint%>
                   </td>
+                  <td>
+                    <%= new Date(ele.createdAt).toISOString()%>
+                  </td>
 
                 </tr>
                 <% }); %>
@@ -121,4 +122,4 @@
       </body>
 
     </div>
-  <script type="text/javascript" src="./javascripts/script.js"></script>
+    <script type="text/javascript" src="./javascripts/script.js"></script>

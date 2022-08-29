@@ -13,7 +13,8 @@
 
       <br>
       <br>
-      <p>Total rows: <%= users.length%> </p>
+      <p>Total rows: <%= users.length%>
+      </p>
       <table class="table">
         <thead class="table-dark">
           <tr>
@@ -21,16 +22,16 @@
             <th scope="col"> Discord Name </th>
             <th scope="col"> Nick Name </th>
             <th scope="col"> Device Id </th>
-            <th scope="col"> Discord Member Changed </th>
-            <th scope="col"> Toggle Discord Member </th>
-            <th scope="col"> Last login </th>
-            <th scope="col"> Balance </th>
-            <!-- <th scope="col"> Status </th> -->
+            <th scope="col"> Discord Member </th>
+            <th scope="col"> Discord Changed </th>
             <th scope="col"> Status </th>
+            <th scope="col"> Status Change </th>
+            <th scope="col"> Last login </th>
             <th scope="col"> Last Login IP</th>
-            <th scope="col"> Signup Date </th>
-            <th scope="col"> Signup Ip Address </th>
-            <th scope="col"> Status Changed Date </th>
+            <!-- <th scope="col"> Status </th> -->
+            <th scope="col"> Signup </th>
+            <th scope="col"> Signup Ip </th>
+            <th scope="col"> Balance </th>
           </tr>
         </thead>
         <tbody>
@@ -48,9 +49,7 @@
               <td>
                 <%= user.deviceId %>
               </td>
-              <td>
-                <%= user.lastDiscordStatusChangedDate %>
-              </td>
+
               <td>
                 <div class="custom-control custom-switch">
                   <% if ( user.discordMember=='YES' ) { %>
@@ -62,14 +61,9 @@
                 </div>
               </td>
               <td>
-                <%= user.lastlogin %>
+                <%= user.lastDiscordStatusChangedDate %>
               </td>
-              <td>
-                <%= user.balance %>
-              </td>
-              <!-- <td>
-                <%= user.status %>
-              </td> -->
+
               <td>
                 <div class="custom-control custom-switch">
                   <% if ( user.status=='ACTIVE' ) { %>
@@ -81,16 +75,22 @@
                 </div>
               </td>
               <td>
+                <%= new Date(user.lastStatusChangedDate).toISOString() %>
+              </td>
+              <td>
                 <%= user.lastloginIp %>
               </td>
               <td>
-                <%= user.createdAt %>
+                <%= new Date(user.lastlogin).toISOString() %>
+              </td>
+              <td>
+                <%= new Date(user.createdAt).toISOString() %>
               </td>
               <td>
                 <%= user.signupIpAddr %>
               </td>
               <td>
-                <%= user.lastStatusChangedDate %>
+                <%= user.balance %>
               </td>
             </tr>
             <% }); %>
@@ -126,4 +126,4 @@
       };
     </script>
 
-<script type="text/javascript" src="./javascripts/script.js"></script>
+    <script type="text/javascript" src="./javascripts/script.js"></script>

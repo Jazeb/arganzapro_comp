@@ -90,10 +90,6 @@ router.post('/gamesSummary', async (req, res) => {
     user['pointsPerSession'] = (totalPoints / user['totalSessions']).toFixed();
     user['avgDailyPoint'] = (totalPoints / days).toFixed();
   }
-  // data.map(user => {
-
-  // });
-
 
   return res.render('gamesSummary', { title: 'Express', data, id: ID });
 
@@ -111,8 +107,15 @@ router.post('/games', async function (req, res) {
     if (!user) return res.render('games', { title: 'Games', games: [], id: ID })
     // const games = await Games.findAll({ where: { userId: user.id } });
     const query = `SELECT * FROM games WHERE userId = ${user.id} AND Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
-    const games = await sequilize.query(query);
-    return res.render('games', { title: 'Games', games: games[0], id: ID });
+    const result = await sequilize.query(query);
+    const games = result[0];
+
+    games.totalRewardSum = games.reduce((acc, game) => acc + game.totalReward, 0);
+
+    games.totalTimBonusSum = games.reduce((acc, game) => acc + game.timeBonus, 0);
+    games.difficultyBonusSum = games.reduce((acc, game) => acc + game.difficultyBonus, 0);
+
+    return res.render('games', { title: 'Games', games, id: ID });
   } catch (err) {
     console.error(err);
     return
@@ -137,9 +140,11 @@ router.post('/profile', async function (req, res, next) {
 
 });
 
-router.put('/profile', async function (req, res, next) {
+router.put('/profile', async function (req, res) {
+
   if (req.body.discordMember)
     req.body.lastDiscordStatusChangedDate = new Date();
+
   else if (req.body.status)
     req.body.lastStatusChangedDate = new Date();
 
@@ -149,9 +154,9 @@ router.put('/profile', async function (req, res, next) {
 
   await User.update({ ...rest }, { where: { id: userId } });
 
-  const users = await User.findAll({ where: { id: userId } });
+  // const users = await User.findAll({ where: { id: userId } });
 
-  return res.render('profile', { title: 'Express', users, id: ID });
+  return res.sendStatus(200);
 
 });
 
@@ -175,7 +180,7 @@ router.post('/updateUser', async (req, res) => {
   }
   const user = await User.findOne({ where });
   return res.render('updateUser', { user: user || {}, id: ID });
-  console.log(user)
+
 });
 
 module.exports = router;

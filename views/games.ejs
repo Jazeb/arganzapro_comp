@@ -29,9 +29,15 @@
         </form>
       </div>
 
+      <!-- win reward, time bonus, difficulty bonus , total reward -->
       <br>
       <br>
-      <p>Total rows: <%= games.length%> </p>
+      <p><b> Total rows: <%= games.length %> </b>
+      <p><b> Total reward sum: <%= games.totalRewardSum %> </b>
+      <p><b> Time bonus sum: <%= games.totalTimBonusSum %> </b>
+      <p><b> Difficulty bonus sum: <%= games.difficultyBonusSum %> </b>
+
+      </p>
       <container>
         <table class="table">
           <thead class="table-dark">
@@ -39,12 +45,12 @@
               <th>Game ID</th>
               <th>Date / Time</th>
               <th>User ID</th>
-              <th>Mode</th>
+              <th>Game Mode</th>
               <th>Session Result</th>
               <th>Time Left</th>
               <th>Difficulty</th>
               <th>Character</th>
-              <th>Envoriment</th>
+              <th>Environment</th>
               <th>Win Reward</th>
               <th>Difficulty Bonus</th>
               <th>Time Bonus</th>
@@ -59,7 +65,7 @@
                   <%= game.id %>
                 </td>
                 <td>
-                  <%= game.createdAt %>
+                  <%= game.createdAt && new Date(game.createdAt).toISOString() %>
                 </td>
                 <td>
                   <%= game.userId %>
@@ -95,7 +101,9 @@
                   <%= game.totalReward %>
                 </td>
               </tr>
+
               <% }) %>
+                </tr>
           </tbody>
 
         </table>

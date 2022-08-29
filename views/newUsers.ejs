@@ -30,7 +30,8 @@
 
         <br>
         <br>
-        <p>Total rows: <%= users.length%> </p>
+        <p>Total rows: <%= users.length%>
+        </p>
         <table class="table" id="usersList">
           <thead class="table-dark">
             <tr>
@@ -38,16 +39,15 @@
               <th scope="col"> Discord Name </th>
               <th scope="col"> Nick Name </th>
               <th scope="col"> Device Id </th>
-              <th scope="col"> Discord Member Changed </th>
-              <th scope="col"> Toggle Discord Member </th>
-              <th scope="col"> Last login </th>
-              <th scope="col"> Balance </th>
-              <!-- <th scope="col"> Status </th> -->
+              <th scope="col"> Discord Member </th>
+              <th scope="col"> Discord Changed </th>
               <th scope="col"> Status </th>
-              <th scope="col"> Last Login IP</th>
-              <th scope="col"> Signup Date </th>
-              <th scope="col"> Signup Ip Address </th>
-              <th scope="col"> Status Changed Date </th>
+              <th scope="col"> Status Changed </th>
+              <th scope="col"> Last login </th>
+              <th scope="col"> Login IP</th>
+              <th scope="col"> Signup </th>
+              <th scope="col"> Signup Ip </th>
+              <th scope="col"> Balance </th>
             </tr>
           </thead>
           <tbody>
@@ -65,50 +65,51 @@
                 <td>
                   <%= user.deviceId %>
                 </td>
-                <td>
-                  <%= user.lastDiscordStatusChangedDate %>
-                </td>
+                
                 <td>
                   <div class="custom-control custom-switch">
-                    <% if ( user.discordMember=='YES' ) { %>
-                      <input type="checkbox" class="custom-control-input" id="status-toggle-discord" checked>
+                    <% if ( user.discordMember == 'YES' ) { %>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle-discord-<%= user.id %>"
+                        checked>
                       <% } else { %>
-                        <input type="checkbox" class="custom-control-input" id="status-toggle-discord">
+                        <input type="checkbox" class="custom-control-input" id="status-toggle-discord-<%= user.id %>">
                         <% } %>
-                          <label class="custom-control-label" for="status-toggle-discord"></label>
+                          <label class="custom-control-label" for="status-toggle-discord-<%= user.id %>"></label>
                   </div>
                 </td>
                 <td>
-                  <%= user.lastlogin %>
+                  <%= user.lastDiscordStatusChangedDate && new Date(user.lastDiscordStatusChangedDate).toISOString() %>
                 </td>
-                <td>
-                  <%= user.balance %>
-                </td>
-                <!-- <td>
-                  <%= user.status %>
-                </td> -->
                 <td>
                   <div class="custom-control custom-switch">
                     <% if ( user.status=='ACTIVE' ) { %>
-                      <input type="checkbox" class="custom-control-input" id="status-toggle" checked>
+                      <input type="checkbox" class="custom-control-input" id="status-toggle-<%= user.id %>" checked>
                       <% } else { %>
-                        <input type="checkbox" class="custom-control-input" id="status-toggle">
+                        <input type="checkbox" class="custom-control-input" id="status-toggle-<%= user.id %>">
                         <% } %>
-                          <label class="custom-control-label" for="status-toggle"></label>
+                          <label class="custom-control-label" for="status-toggle-<%= user.id %>"></label>
                   </div>
+                </td>
+                <td>
+                  <%= user.lastStatusChangedDate && new Date(user.lastStatusChangedDate).toISOString() %>
+                </td>
+                <td>
+                  <%= user.lastlogin && new Date(user.lastlogin).toISOString() %>
                 </td>
                 <td>
                   <%= user.lastloginIp %>
                 </td>
                 <td>
-                  <%= user.createdAt %>
+                  <%= new Date(user.createdAt).toISOString() %>
                 </td>
                 <td>
                   <%= user.signupIpAddr %>
                 </td>
+
                 <td>
-                  <%= user.lastStatusChangedDate %>
+                  <%= user.balance %>
                 </td>
+                
               </tr>
               <% }); %>
           </tbody>
@@ -118,10 +119,25 @@
 
 
     <script>
-      $(document).ready(function () {
-        $('#usersList').DataTable();
-        $('.dataTables_length').addClass('bs-select');
+
+      const userIds = [];
+      const users = JSON.parse('<%- JSON.stringify(users) %>');
+      for (const user of users) userIds.push(user.id);
+
+      userIds.forEach(userId => {
+        document.getElementById('status-toggle-discord-' + userId).onchange = function (e) {
+          const discordMember = e.target.checked ? 'YES' : 'NO';
+          const body = { discordMember, userId };
+          sendRequest(body);
+        };
+
+        document.getElementById('status-toggle-' + userId).onchange = function (e) {
+          const status = e.target.checked ? 'ACTIVE' : 'BLOCKED';
+          const body = { status, userId };
+          sendRequest(body);
+        };
       });
+
     </script>
 
-<script type="text/javascript" src="./javascripts/script.js"></script>
+    <script type="text/javascript" src="./javascripts/script.js"></script>
