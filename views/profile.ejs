@@ -61,7 +61,7 @@
                 </div>
               </td>
               <td>
-                <%= user.lastDiscordStatusChangedDate %>
+                <%= new Date(user.lastDiscordStatusChangedDate).toISOString() %>
               </td>
 
               <td>
@@ -81,7 +81,7 @@
                 <%= user.lastloginIp %>
               </td>
               <td>
-                <%= new Date(user.lastlogin).toISOString() %>
+                <%= new Date(user.lastLogin).toISOString() %>
               </td>
               <td>
                 <%= new Date(user.createdAt).toISOString() %>

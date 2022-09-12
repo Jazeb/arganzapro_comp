@@ -111,6 +111,7 @@ router.post('/games', async function (req, res) {
     const games = result[0];
 
     games.totalRewardSum = games.reduce((acc, game) => acc + game.totalReward, 0);
+    games.totalWinReward = games.reduce((acc, game) => acc + game.winReward, 0);
 
     games.totalTimBonusSum = games.reduce((acc, game) => acc + game.timeBonus, 0);
     games.difficultyBonusSum = games.reduce((acc, game) => acc + game.difficultyBonus, 0);

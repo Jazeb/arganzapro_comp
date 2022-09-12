@@ -34,6 +34,7 @@
       <br>
       <p><b> Total rows: <%= games.length %> </b>
       <p><b> Total reward sum: <%= games.totalRewardSum %> </b>
+      <p><b> Win reward sum: <%= games.totalWinReward %> </b>
       <p><b> Time bonus sum: <%= games.totalTimBonusSum %> </b>
       <p><b> Difficulty bonus sum: <%= games.difficultyBonusSum %> </b>
 
@@ -86,7 +87,7 @@
                   <%= game.character %>
                 </td>
                 <td>
-                  <%= game.enviroment %>
+                  <%= game.environment %>
                 </td>
                 <td>
                   <%= game.winReward %>
