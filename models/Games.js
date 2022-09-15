@@ -39,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: true
         },
         timeBonus: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.INTEGER(11),
             allowNull: true
         }, 
         totalReward:{
