@@ -38,10 +38,9 @@ router.post('/newUsers', async (req, res) => {
 // const getDays = (startDate, endDate) => parseInt((endDate - startDate) / (1000 * 60 * 60 * 24), 10); 
 
 const getDays = (endDate, signupDate) => {
-  const e = moment(signupDate).add(1, 'day').utc().format();
-  const duration = moment(endDate).diff(e, 'days');
-  console.log({ endDate, signupDate, duration, e })
-  return duration;
+  const noOfDays = moment(endDate).diff(signupDate, 'days') + 1
+  console.log({ endDate, signupDate, noOfDays })
+  return noOfDays;
 }
 
 /**
