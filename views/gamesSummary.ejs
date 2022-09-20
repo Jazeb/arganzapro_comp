@@ -32,7 +32,7 @@
 
         <br>
         <br>
-        <p>Total rows: <%= data.length%>
+        <p>Total rows: <%= games.length%>
         </p>
         <container>
           <table class="table">
@@ -61,55 +61,55 @@
             </thead>
 
             <tbody>
-              <% data.forEach(ele=> { %>
+              <% games.forEach(game=> { %>
                 <tr>
                   <td>
-                    <%= ele.id%>
+                    <%= game.userId%>
                   </td>
                   <td>
-                    <%= ele.nickName%>
+                    <%= game.user.nickName %>
                   </td>
                   <td>
-                    <%= ele.discordName%>
+                    <%= game.user.discordName %>
                   </td>
                   <td>
-                    <%= ele.totalSessions%>
+                    <%= game.totalSessions %>
                   </td>
                   <td>
-                    <%= ele.singleSessions%>
+                    <%= game.singleSessions %>
                   </td>
                   <td>
-                    <%= ele.multiSessions%>
+                    <%= game.multiSessions %>
                   </td>
                   <td>
-                    <%= ele.missionsSessions%>
+                    <%= game.missionsSessions %>
                   </td>
                   <td>
-                    <%= ele.tournamentSessions%>
+                    <%= game.tournamentSessions %>
                   </td>
                   <td>
-                    <%= ele.wins%>
+                    <%= game.wins %>
                   </td>
                   <td>
-                    <%= ele.lose%>
+                    <%= game.lose %>
                   </td>
                   <td>
-                    <%= ele.winsPercent%>
+                    <%= game.winsPercent %>
                   </td>
                   <td>
-                    <%= ele.avgDailySessions%>
+                    <%= game.avgDailySessions %>
                   </td>
                   <td>
-                    <%= ele.totalPoints%>
+                    <%= game.totalPoints %>
                   </td>
                   <td>
-                    <%= ele.pointsPerSession%>
+                    <%= game.pointsPerSession %>
                   </td>
                   <td>
-                    <%= ele.avgDailyPoint%>
+                    <%= game.avgDailyPoint%>
                   </td>
                   <td>
-                    <%= new Date(ele.createdAt).toISOString()%>
+                    <%= new Date(game.createdAt).toISOString()%>
                   </td>
 
                 </tr>

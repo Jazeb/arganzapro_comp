@@ -1,5 +1,6 @@
 const express = require('express');
 const moment = require('moment');
+const _ = require('lodash');
 const { Op } = require('sequelize');
 const router = express.Router();
 
@@ -55,61 +56,68 @@ router.post('/gamesSummary', async (req, res) => {
   if (!startDate || !endDate) return res.render('gamesSummary', { title: 'Express', data: [] });
 
 
-  const query = `SELECT userId FROM games WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
-  const result = await sequilize.query(query);
+  // const query = `SELECT userId FROM games WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
+  // const result = await sequilize.query(query);
 
-  const userIds = result[0].map(user => user.userId);
+  // const userIds = result[0].map(user => user.userId);
 
   const where = {
-    'id': {
-      [Op.in]: userIds
+    [Op.and]: {
+      'createdAt': {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate
+      }
     }
   }
 
-  const include = [{ model: Games }];
-  const data = await User.findAll({ where, include });
-
+  const include = [{ model: User }];
+  const games = await Games.findAll({ where, include });
 
   // const days = getDays(startDate, endDate);
 
-  data.map(d => d = d.toJSON());
+  // games.map(d => d = d.toJSON());
 
   // End Date - Sign Date + 1 Day
 
 
-  for (const user of data) {
+
+  for (const game of games) {
+    const user = game.user;
+    const userGames = games.filter(game => game.userId == user.id);
+
+
     let totalPoints = 0;
-    const games = user.games;
 
     const noOfDays = getDays(endDate, user.createdAt);
-    console.log({ noOfDays });
+    // console.log({ noOfDays });
 
-    const totalSessions = games.length;
+    const totalSessions = userGames.length;
 
-    user['totalSessions'] = totalSessions;
-    user['singleSessions'] = games.filter(game => game.mode == 'SINGLE').length;
-    user['missionsSessions'] = games.filter(game => game.mode == 'MISSION').length;
-    user['multiSessions'] = games.filter(game => game.mode == 'MULTI').length;
-    user['tournamentSessions'] = games.filter(game => game.mode == 'TOURNAMENT').length;
+    game['totalSessions'] = totalSessions;
+    game['singleSessions'] = userGames.filter(game => game.mode == 'SINGLE').length;
+    game['missionsSessions'] = userGames.filter(game => game.mode == 'MISSION').length;
+    game['multiSessions'] = userGames.filter(game => game.mode == 'MULTI').length;
+    game['tournamentSessions'] = userGames.filter(game => game.mode == 'TOURNAMENT').length;
 
-    user['wins'] = games.filter(game => game.result == 'Win').length;
-    user['lose'] = games.filter(game => game.result == 'Lose').length;
+    game['wins'] = userGames.filter(game => game.result == 'Win').length;
+    game['lose'] = userGames.filter(game => game.result == 'Lose').length;
 
-    user['winsPercent'] = ((user['wins'] / totalSessions) * 100).toFixed();
-    user['avgDailySessions'] = (totalSessions / noOfDays).toFixed();
+    game['winsPercent'] = ((game['wins'] / totalSessions) * 100).toFixed();
+    game['avgDailySessions'] = (totalSessions / noOfDays).toFixed();
 
 
-    games.forEach(game => totalPoints += game.totalReward);
+    userGames.forEach(game => totalPoints += game.totalReward);
 
-    user['totalPoints'] = totalPoints;
+    game['totalPoints'] = totalPoints;
 
-    user['pointsPerSession'] = (totalPoints / totalSessions).toFixed();
-    user['avgDailyPoint'] = (totalPoints / noOfDays).toFixed();
+    game['pointsPerSession'] = (totalPoints / totalSessions).toFixed();
+    game['avgDailyPoint'] = (totalPoints / noOfDays).toFixed();
   }
 
-  data.sort((a, b) => b.totalPoints - a.totalPoints);
+  const unique = _.uniqBy(games, 'userId');
+  unique.sort((a, b) => b.totalPoints - a.totalPoints);
 
-  return res.render('gamesSummary', { title: 'Express', data, id: ID });
+  return res.render('gamesSummary', { title: 'Express', games: unique, id: ID });
 
 });
 
