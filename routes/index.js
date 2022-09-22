@@ -47,7 +47,7 @@ const getDays = (endDate, signupDate) => {
  * Games Summary
  */
 
-router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', data: [], id: ID }));
+router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', games: [], id: ID }));
 
 router.post('/gamesSummary', async (req, res) => {
 
@@ -116,6 +116,7 @@ router.post('/gamesSummary', async (req, res) => {
   const unique = _.uniqBy(games, 'userId');
   unique.sort((a, b) => b.totalPoints - a.totalPoints);
 
+  console.log(unique)
   return res.render('gamesSummary', { title: 'Express', games: unique, id: ID });
 
 });
