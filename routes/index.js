@@ -102,7 +102,7 @@ router.post('/gamesSummary', async (req, res) => {
     game['lose'] = userGames.filter(game => game.result == 'Lose').length;
 
     game['winsPercent'] = ((game['wins'] / totalSessions) * 100).toFixed();
-    game['avgDailySessions'] = (totalSessions / noOfDays).toFixed();
+    game['avgDailySessions'] = (totalSessions / noOfDays);
 
 
     userGames.forEach(game => totalPoints += game.totalReward);
@@ -158,10 +158,24 @@ router.get('/profile', (req, res) => res.render('profile', { title: 'Express', u
 
 router.post('/profile', async function (req, res, next) {
 
-  const nickName = req.body.nickName;
+  const key = req.body.key;
+  const where = {
+    [Op.or]: [
+      {
+        id: {
+          [Op.eq]: key
+        },
+      },
+      {
+        nickName: {
+          [Op.eq]: key
+        }
+      }
+    ]
+  }
 
   // const include = [{ model: Games }]
-  const users = await User.findAll({ where: { nickName } });
+  const users = await User.findAll({ where });
 
   return res.render('profile', { title: 'Express', users, id: ID });
 
