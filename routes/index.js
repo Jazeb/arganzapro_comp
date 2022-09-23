@@ -130,8 +130,22 @@ router.get('/games', async (req, res) => res.render('games', { title: 'Express',
 
 router.post('/games', async function (req, res) {
   try {
-    const { startDate, endDate, nickName } = req.body;
-    const user = await User.findOne({ where: { nickName } });
+    const { startDate, endDate, key } = req.body;
+    const where = {
+      [Op.or]: [
+        {
+          id: {
+            [Op.eq]: key
+          },
+        },
+        {
+          nickName: {
+            [Op.eq]: key
+          }
+        }
+      ]
+    }
+    const user = await User.findOne({ where });
     if (!user) return res.render('games', { title: 'Games', games: [], id: ID })
     // const games = await Games.findAll({ where: { userId: user.id } });
     const query = `SELECT * FROM games WHERE userId = ${user.id} AND Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
