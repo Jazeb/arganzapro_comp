@@ -59,12 +59,14 @@ router.post('/gamesSummary', async (req, res) => {
   // const result = await sequilize.query(query);
 
   // const userIds = result[0].map(user => user.userId);
+  let eDate = moment(endDate).add(23, 'hours').utc().format();
+  console.log({ eDate });
 
   const where = {
     [Op.and]: {
       'createdAt': {
         [Op.gte]: startDate,
-        [Op.lte]: endDate
+        [Op.lte]: eDate
       }
     }
   }
@@ -88,7 +90,7 @@ router.post('/gamesSummary', async (req, res) => {
     let totalPoints = 0;
 
     const noOfDays = getDays(endDate, user.createdAt);
-    // console.log({ noOfDays });
+    console.log({ noOfDays });
 
     const totalSessions = userGames.length;
 
@@ -101,8 +103,8 @@ router.post('/gamesSummary', async (req, res) => {
     game['wins'] = userGames.filter(game => game.result == 'Win').length;
     game['lose'] = userGames.filter(game => game.result == 'Lose').length;
 
-    game['winsPercent'] = ((game['wins'] / totalSessions) * 100).toFixed();
-    game['avgDailySessions'] = (totalSessions / noOfDays);
+    game['winsPercent'] = ((game['wins'] / totalSessions) * 100).toFixed(3);
+    game['avgDailySessions'] = (totalSessions / noOfDays).toFixed(3);
 
 
     userGames.forEach(game => totalPoints += game.totalReward);
