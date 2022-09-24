@@ -13,7 +13,7 @@ const ID = 1122;
 router.get('/', (req, res, next) => res.render('index', { title: 'Express', id: null }));
 
 
-router.get('/newUsers', async (req, res) => res.render('newUsers', { title: 'Express', users: [] }));
+router.get('/newUsers', async (req, res) => res.render('newUsers', { title: 'Express', users: [], startDate: null, endDate: null }));
 router.get('/login', async (req, res) => res.render('login', { title: 'Express', users: [] }));
 
 router.post('/login', async (req, res) => {
@@ -27,7 +27,7 @@ router.post('/newUsers', async (req, res) => {
 
   const query = `SELECT * FROM user WHERE Date(createdAt) >= '${startDate}' AND Date(createdAt) <= '${endDate}';`;
   const users = await sequilize.query(query);
-  return res.render('newUsers', { title: 'Express', users: users[0], id: ID });
+  return res.render('newUsers', { title: 'Express', users: users[0], id: ID, startDate, endDate });
 
 });
 
@@ -48,7 +48,7 @@ const getDays = (endDate, signupDate) => {
  * Games Summary
  */
 
-router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', games: [], id: ID }));
+router.get('/gamesSummary', async (req, res) => res.render('gamesSummary', { title: 'Express', games: [], id: ID, startDate: null, endDate: null }));
 
 router.post('/gamesSummary', async (req, res) => {
 
@@ -120,7 +120,7 @@ router.post('/gamesSummary', async (req, res) => {
   unique.sort((a, b) => b.totalPoints - a.totalPoints);
 
   console.log(unique)
-  return res.render('gamesSummary', { title: 'Express', games: unique, id: ID });
+  return res.render('gamesSummary', { title: 'Express', games: unique, id: ID, startDate, endDate });
 
 });
 
@@ -158,6 +158,9 @@ router.post('/games', async function (req, res) {
 
     games.totalTimBonusSum = games.reduce((acc, game) => acc + game.timeBonus, 0);
     games.difficultyBonusSum = games.reduce((acc, game) => acc + game.difficultyBonus, 0);
+    games.startDate = startDate;
+    games.endDate = endDate;
+    games.key = key;
 
     return res.render('games', { title: 'Games', games, id: ID });
   } catch (err) {
@@ -171,7 +174,7 @@ router.post('/games', async function (req, res) {
 /**
  * Profile APIs
  */
-router.get('/profile', (req, res) => res.render('profile', { title: 'Express', users: [], id: ID }));
+router.get('/profile', (req, res) => res.render('profile', { title: 'Express', users: [], id: ID, key: null }));
 
 router.post('/profile', async function (req, res, next) {
 
@@ -194,7 +197,7 @@ router.post('/profile', async function (req, res, next) {
   // const include = [{ model: Games }]
   const users = await User.findAll({ where });
 
-  return res.render('profile', { title: 'Express', users, id: ID });
+  return res.render('profile', { title: 'Express', users, id: ID, key });
 
 });
 
