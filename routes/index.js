@@ -221,26 +221,23 @@ router.put('/profile', async function (req, res) {
 
 });
 
-router.get('/updateUser', (req, res) => res.render('updateUser', { title: 'Update User Data', user: {}, id: ID }));
+router.get('/updateUser', (req, res) => res.render('updateUser', { title: 'Update User Data', startDate: null, endDate: null, users: [], id: ID }));
 
 router.post('/updateUser', async (req, res) => {
-  const key = req.body.key;
+  const { startDate, endDate } = req.body;
+  if(!startDate || !endDate) return res.render('updateUser', { title: 'Update User Data', startDate: null, endDate: null, users: [], id: ID });
+  let eDate = endDate && moment(endDate).add(23, 'hours').utc().format()
+
   const where = {
-    [Op.or]: [
-      {
-        id: {
-          [Op.eq]: key
-        },
-      },
-      {
-        nickName: {
-          [Op.eq]: key
-        }
+    [Op.and]: {
+      'createdAt': {
+        [Op.gte]: startDate,
+        [Op.lte]: eDate
       }
-    ]
+    }
   }
-  const user = await User.findOne({ where });
-  return res.render('updateUser', { user: user || {}, id: ID });
+  const users = await User.findAll({ where });
+  return res.render('updateUser', { users, id: ID, startDate, endDate });
 
 });
 
