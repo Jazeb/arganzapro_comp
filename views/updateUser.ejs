@@ -38,6 +38,7 @@
           <thead class="table-dark">
             <tr>
               <th scope="col"> User Id </th>
+              <th scope="col"> Nick Name </th>
               <th scope="col"> Discord Member </th>
               <th scope="col"> AccountStatus </th>
             </tr>
@@ -47,6 +48,9 @@
               <tr>
                 <td>
                   <%= u.id %>
+                </td>
+                <td>
+                  <%= u.nickName %>
                 </td>
                 <td>
                   <div class="custom-control custom-switch">
